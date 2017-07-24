@@ -2,7 +2,7 @@ require('dotenv-extended').load();
 
 const builder = require('botbuilder');
 const restify = require('restify');
-
+const {addNote} = require('./requests/note');
 // setup restify server
 
 const server = restify.createServer();
@@ -60,6 +60,8 @@ bot.dialog('Add a note', [
   },
   (session, results) => {
     session.dialogData.text = results.response;
+    session.dialogData.tags = [];
+    addNote(session.dialogData);
     session.endConversation(`You've saved "${session.dialogData.title}" as a note`);
   }
 ]).triggerAction({
