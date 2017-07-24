@@ -12,7 +12,7 @@ function addNote (data) {
       lastEditTime: Date.now(),
       // TODO: Enable authentication
       // userId: firebase.auth().currentUser.uid
-      userId: 'ExkVJBLKOthqpycAiAdkAHdvPfA3'
+      userId: '41ZyBmZ5XIMeVxk8en9LxXf9PWB3'
   };
 
 return axios.post(`${ADDNOTEURL}`, note)
