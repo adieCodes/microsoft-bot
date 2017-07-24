@@ -3,6 +3,8 @@ require('dotenv-extended').load();
 const builder = require('botbuilder');
 const restify = require('restify');
 
+const addNote = require('./requests/requestAddNote');
+
 // setup restify server
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
@@ -53,9 +55,9 @@ bot.dialog('options', [
 
 bot.dialog('Add a note', [
   (session, args) => {
-    console.log(args.intent.entity);
     session.dialogData.text = args.intent.entity || session.message.text;
     session.dialogData.tags = [];
+    addNote(session.dialogData);
     session.endConversation(`note saved: ${session.dialogData.text}`);
   }
 ]).triggerAction({

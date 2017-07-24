@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "S": "^0.0.1",
+    "axios": "^0.16.2",
     "bluebird": "^3.5.0",
     "botbuilder": "^3.8.4",
     "dotenv-extended": "^2.0.1",
