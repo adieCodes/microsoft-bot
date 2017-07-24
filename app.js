@@ -2,16 +2,14 @@ require('dotenv-extended').load();
 
 const builder = require('botbuilder');
 const restify = require('restify');
-const {addNote} = require('./requests/note');
-// setup restify server
 
+// setup restify server
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
   console.log('%s listening to %s', server.name, server.url);
 });
 
 // create chat connector for communicating with the Bot Framework Service
-
 const connector = new builder.ChatConnector({
   appId: process.env.MICROSOFT_APP_ID,
   appPassword: process.env.MICROSOFT_APP_PASSWORD
@@ -27,6 +25,9 @@ const bot = new builder.UniversalBot(connector,
     session.endConversation();
   }
 );
+
+const recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
+bot.recognizer(recognizer);
 
 bot.dialog('options', [
   (session) => {
@@ -51,24 +52,14 @@ bot.dialog('options', [
 });
 
 bot.dialog('Add a note', [
-  (session) => {
-    builder.Prompts.text(session, 'What title would you like to give your note?');
-  },
-  (session, results) => {
-    session.dialogData.title = results.response;
-    builder.Prompts.text(session, 'What would you like to remember?');
-  },
-  (session, results) => {
-    session.dialogData.text = results.response;
+  (session, args) => {
+    console.log(args.intent.entity);
+    session.dialogData.text = args.intent.entity || session.message.text;
     session.dialogData.tags = [];
-    addNote(session.dialogData);
-    session.endConversation(`You've saved "${session.dialogData.title}" as a note`);
+    session.endConversation(`note saved: ${session.dialogData.text}`);
   }
 ]).triggerAction({
-  matches: /^Add a note|note|Add note/i
-}).cancelAction('cancelAction', 'Note deleted', {
-  matches: /^cancel$/i,
-  confirmPrompt: 'Are you sure? "Yes" will delete the note and "No" will continue where you were'
+  matches: 'AddNote'
 });
 
 bot.dialog('Add an expense', [
