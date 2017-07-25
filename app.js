@@ -4,7 +4,7 @@ const builder = require('botbuilder');
 const restify = require('restify');
 
 const addNote = require('./requests/requestAddNote');
-
+const addExpense = require('./requests/requestAddExpense');
 // setup restify server
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
@@ -65,28 +65,46 @@ bot.dialog('Add a note', [
 });
 
 bot.dialog('Add an expense', [
-  (session) => {
-    builder.Prompts.text(session, 'What\'s the name of the item you\'d like to add?');
+  (session, args, next) => {
+    const description = builder.EntityRecognizer.findEntity(args.intent.entities, 'textInput');
+    const amount = builder.EntityRecognizer.findEntity(args.intent.entities, 'builtin.number');
+    const chargeTo = builder.EntityRecognizer.findEntity(args.intent.entities, 'name');
+    if (description) {
+      session.dialogData.description = description.entity;
+    } else {
+      session.dialogData.description = session.message.text;
+    }
+    if (chargeTo) {
+      session.dialogData.chargeTo = chargeTo.entity;
+    } else {
+      session.dialogData.chargeTo = '';
+    }
+    if (amount) {
+      session.dialogData.amount = amount.entity;
+      next({response: amount});
+    } else {
+      builder.Prompts.number(session, 'How much was the item?');
+    }
   },
   (session, results) => {
-    session.dialogData.description = results.response;
-    builder.Prompts.number(session, 'How much was the item?');
-  },
-  (session, results) => {
-    session.dialogData.amount = results.response;
-    builder.Prompts.text(session, 'Who would you like to charge this to?');
-  },
-  (session, results) => {
-    session.dialogData.chargeTo = results.response;
-    session.endConversation(`I've added ${session.dialogData.description}
-                            with a value of £${session.dialogData.amount}
-                            against ${session.dialogData.chargeTo}`);
+    addExpense({
+        amount: results.response,
+        description: session.dialogData.description,
+        chargeTo: session.dialogData.chargeTo
+    });
+    if (session.dialogData.chargeTo !== '') {
+      session.endConversation(
+        `${session.dialogData.description} saved as an expense
+        with a cost of £${results.response}
+        against ${session.dialogData.chargeTo}`
+      );
+    }
+    else {
+      session.endConversation(`${session.dialogData.description} saved as an expense with a cost of £${results.response}`);
+    }
   }
 ]).triggerAction({
-  matches: /^Add an expense|expense|Add expense/i
-}).cancelAction('cancelAction', 'Expense deleted', {
-  matches: /^cancel$/i,
-  confirmPrompt: 'Are you sure? "Yes" will delete the note and "No" will continue where you were'
+  matches: 'AddExpense'
 });
 
 bot.dialog('Add a billing item', [
