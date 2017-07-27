@@ -7,7 +7,6 @@ const addNote = require('./requests/requestAddNote');
 const addExpense = require('./requests/requestAddExpense');
 const getNotes = require('./queries/queryGetLatestNotes');
 const getExpenses = require('./queries/queryGetLatestExpenses');
-// const makeCard = require('./components/componentCard');
 const makeCardWithButton = require('./components/componentCardWithBtn');
 const {returnLastFiveNotes,
   returnLastFiveExpense} = require('./helpers/helpers');
@@ -37,7 +36,7 @@ const bot = new builder.UniversalBot(connector,
 const recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
 bot.recognizer(recognizer);
 
-bot.dialog('options', [
+bot.dialog('Help', [
   (session) => {
     session.send('Hi, I can help you store and review your expenses and notes.');
     session.send('All you need to do is send me a message that includes the word "expense", "note" or a synonym. Give it a try...');
@@ -139,29 +138,4 @@ bot.dialog('View expense', [
   }
 ]).triggerAction({
   matches: /^viewexpenses$/i
-});
-
-bot.dialog('Add a billing item', [
-  (session) => {
-    builder.Prompts.text(session, 'What\'s the name of the client you\'d like to bill?');
-  },
-  (session, results) => {
-    session.dialogData.client = results.response;
-    builder.Prompts.number(session, 'How much do you need to charge the client?');
-  },
-  (session, results) => {
-    session.dialogData.amount = results.response;
-    builder.Prompts.time(session, 'When is the bill due?');
-  },
-  (session, results) => {
-    session.dialogData.dueDate = results.response.resolution.start;
-    session.endConversation(`I've added an item to ${session.dialogData.client}
-                            with a value of £${session.dialogData.amount}
-                            which is due ${session.dialogData.dueDate}`);
-  }
-]).triggerAction({
-  matches: /^Add a billing item|billing|Add billing item/i
-}).cancelAction('cancelAction', 'Billing item deleted', {
-  matches: /^cancel$/i,
-  confirmPrompt: 'Are you sure? "Yes" will delete the billing item and "No" will continue where you were'
 });

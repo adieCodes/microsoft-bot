@@ -1,7 +1,7 @@
 {
   "name": "microsoft-bot",
   "version": "1.0.0",
-  "description": "A bot to help your store billing items, expenses and notes through natural language.",
+  "description": "A bot to help your store expenses and notes through natural language.",
   "main": "app.js",
   "dependencies": {
     "S": "^0.0.1",
@@ -17,15 +17,12 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "chai": "^4.1.0",
     "eslint": "^4.2.0",
-    "husky": "^0.14.3",
-    "mocha": "^3.4.2"
+    "husky": "^0.14.3"
   },
   "scripts": {
     "test": "mocha ./spec",
     "lint": "eslint --fix ./",
-    "precommit": "npm run test",
     "posttest": "npm run lint"
   },
   "repository": {
