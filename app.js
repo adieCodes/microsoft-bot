@@ -6,9 +6,11 @@ const restify = require('restify');
 const addNote = require('./requests/requestAddNote');
 const addExpense = require('./requests/requestAddExpense');
 const getNotes = require('./queries/queryGetLatestNotes');
+const getExpenses = require('./queries/queryGetLatestExpenses');
 const makeCard = require('./components/componentCard');
 const makeCardWithButton = require('./components/componentCardWithBtn');
-const returnLastFive = require('./helpers/helpers');
+const {returnLastFiveNotes,
+  returnLastFiveExpense} = require('./helpers/helpers');
 
 // setup restify server
 const server = restify.createServer();
@@ -75,7 +77,7 @@ bot.dialog('Add a note', [
     session.send(noteConfirmationMessage);
     getNotes()
       .then((notes) => {
-        let cards = returnLastFive(notes);
+        let cards = returnLastFiveNotes(notes);
         cards.unshift(makeCard(session, 'note'));
         const reply = new builder.Message(session);
         reply.attachmentLayout(builder.AttachmentLayout.carousel);
@@ -106,27 +108,38 @@ bot.dialog('Add an expense', [
     }
     if (amount) {
       session.dialogData.amount = amount.entity;
-      next({response: amount});
+      next({response: amount.entity});
     } else {
       builder.Prompts.number(session, 'How much was the item?');
     }
   },
   (session, results) => {
+    session.dialogData.amount = results.response;
     addExpense({
         amount: results.response,
         description: session.dialogData.description,
         chargeTo: session.dialogData.chargeTo
     });
-    if (session.dialogData.chargeTo !== '') {
-      session.endConversation(
-        `${session.dialogData.description} saved as an expense
-        with a cost of £${results.response}
-        against ${session.dialogData.chargeTo}`
-      );
-    }
-    else {
-      session.endConversation(`${session.dialogData.description} saved as an expense with a cost of £${results.response}`);
-    }
+    const expenseCompletion = makeCardWithButton(
+      session,
+      'Added expense',
+      'You can view/edit all your expenses via the button below',
+      'https://google.com',
+      'View/edit expenses'
+    );
+    const noteConfirmationMessage = new builder.Message(session);
+    noteConfirmationMessage.addAttachment(expenseCompletion);
+    session.send(noteConfirmationMessage);
+    getExpenses()
+      .then ((expense) => {
+        let cards = returnLastFiveExpense(expense);
+        const reply = new builder.Message(session);
+        reply.attachmentLayout(builder.AttachmentLayout.carousel);
+        reply.attachments(cards);
+        session.send('Seems like a good time to review some of your most recent expenses');
+        session.send(reply);
+      });
+    session.endConversation();
   }
 ]).triggerAction({
   matches: 'AddExpense'

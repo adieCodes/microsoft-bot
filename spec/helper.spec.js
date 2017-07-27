@@ -1,9 +1,9 @@
 const {expect} = require('chai');
-const returnLastFive = require('../helpers/helpers.js');
+const {returnLastFiveNotes} = require('../helpers/helpers.js');
 
 describe('#returnLastFive', () => {
   it('is a function', () => {
-    expect(returnLastFive).to.be.a('function');
+    expect(returnLastFiveNotes).to.be.a('function');
   });
   // TODO: Need to rewrite test as it interacts with live data
   // it('should return the last five elements from an object', () => {
