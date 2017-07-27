@@ -94,4 +94,5 @@ typings/
 # configuration
 
 config.js
+firebaseSetup.js
 .env
