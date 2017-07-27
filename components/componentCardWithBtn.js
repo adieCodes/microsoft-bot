@@ -5,6 +5,7 @@ module.exports = function (session, title, text, url, btnName) {
     .title(title)
     .text(text)
     .buttons([
-      builder.CardAction.openUrl(session, url, btnName)
+      builder.CardAction.openUrl(session, url, btnName),
+      builder.CardAction.imBack(session, 'viewNotes', 'view notes')
     ]);
 };

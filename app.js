@@ -7,7 +7,7 @@ const addNote = require('./requests/requestAddNote');
 const addExpense = require('./requests/requestAddExpense');
 const getNotes = require('./queries/queryGetLatestNotes');
 const getExpenses = require('./queries/queryGetLatestExpenses');
-const makeCard = require('./components/componentCard');
+// const makeCard = require('./components/componentCard');
 const makeCardWithButton = require('./components/componentCardWithBtn');
 const {returnLastFiveNotes,
   returnLastFiveExpense} = require('./helpers/helpers');
@@ -75,10 +75,16 @@ bot.dialog('Add a note', [
     const noteConfirmationMessage = new builder.Message(session);
     noteConfirmationMessage.addAttachment(noteCompletion);
     session.send(noteConfirmationMessage);
+  }
+]).triggerAction({
+  matches: 'AddNote'
+});
+
+bot.dialog('View notes', [
+  (session) => {
     getNotes()
       .then((notes) => {
         let cards = returnLastFiveNotes(notes);
-        cards.unshift(makeCard(session, 'note'));
         const reply = new builder.Message(session);
         reply.attachmentLayout(builder.AttachmentLayout.carousel);
         reply.attachments(cards);
@@ -88,7 +94,7 @@ bot.dialog('Add a note', [
       });
   }
 ]).triggerAction({
-  matches: 'AddNote'
+  matches: /^viewNotes$/i
 });
 
 bot.dialog('Add an expense', [
