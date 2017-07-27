@@ -67,10 +67,9 @@ bot.dialog('Add a note', [
     addNote(session.dialogData);
     const noteCompletion = makeCardWithButton(
       session,
-      'Added note',
+      'note',
       'You can view/edit all your notes via the button below',
-      'https://google.com',
-      'View/edit notes'
+      'https://google.com'
     );
     const noteConfirmationMessage = new builder.Message(session);
     noteConfirmationMessage.addAttachment(noteCompletion);
@@ -88,13 +87,12 @@ bot.dialog('View notes', [
         const reply = new builder.Message(session);
         reply.attachmentLayout(builder.AttachmentLayout.carousel);
         reply.attachments(cards);
-        session.send('Seems like a good time to review some of your most recent notes');
         session.send(reply);
         session.endConversation();
       });
   }
 ]).triggerAction({
-  matches: /^viewNotes$/i
+  matches: /^viewnotes$/i
 });
 
 bot.dialog('Add an expense', [
@@ -128,14 +126,20 @@ bot.dialog('Add an expense', [
     });
     const expenseCompletion = makeCardWithButton(
       session,
-      'Added expense',
+      'expense',
       'You can view/edit all your expenses via the button below',
-      'https://google.com',
-      'View/edit expenses'
+      'https://google.com'
     );
     const noteConfirmationMessage = new builder.Message(session);
     noteConfirmationMessage.addAttachment(expenseCompletion);
     session.send(noteConfirmationMessage);
+  }
+]).triggerAction({
+  matches: 'AddExpense'
+});
+
+bot.dialog('View expense', [
+  (session) => {
     getExpenses()
       .then ((expense) => {
         let cards = returnLastFiveExpense(expense);
@@ -148,7 +152,7 @@ bot.dialog('Add an expense', [
     session.endConversation();
   }
 ]).triggerAction({
-  matches: 'AddExpense'
+  matches: /^viewexpenses$/i
 });
 
 bot.dialog('Add a billing item', [
