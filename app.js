@@ -40,24 +40,11 @@ bot.recognizer(recognizer);
 
 bot.dialog('options', [
   (session) => {
-    const card = new builder.ThumbnailCard(session);
-    card.buttons([
-      new builder.CardAction(session).title('Add a note').value('Add a note').type('imBack'),
-      new builder.CardAction(session).title('Add an expense').value('Add an expense').type('imBack'),
-      new builder.CardAction(session).title('Add a billing item').value('Add a billing item').type('imBack')
-    ]).text('Press on one of the options below to start');
-
-    const message = new builder.Message(session);
-    message.addAttachment(card);
-
-    const choices = ['Add a note', 'Add an expense', 'Add a billing item'];
-    session.send('Hi, I can help you store and review your billing items, expenses and notes.');
-    session.send('You can also access these features by typing a sentences that contains the keywords "billing", "expense" or "note".');
-    session.send('Or cancel any action during the conversation by sending "cancel" as a message.');
-    builder.Prompts.choice(session, message, choices);
+    session.send('Hi, I can help you store and review your expenses and notes.');
+    session.send('All you need to do is send me a message that includes the word "billing", "note" or a synonym. Give it a try...');
   }
 ]).triggerAction({
-  matches: /^help|options|option|show options|get started/i
+  matches: /^get started/i
 });
 
 bot.dialog('Add a note', [
