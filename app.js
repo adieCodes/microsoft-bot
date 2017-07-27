@@ -41,7 +41,7 @@ bot.recognizer(recognizer);
 bot.dialog('options', [
   (session) => {
     session.send('Hi, I can help you store and review your expenses and notes.');
-    session.send('All you need to do is send me a message that includes the word "billing", "note" or a synonym. Give it a try...');
+    session.send('All you need to do is send me a message that includes the word "expense", "note" or a synonym. Give it a try...');
   }
 ]).triggerAction({
   matches: /^get started/i

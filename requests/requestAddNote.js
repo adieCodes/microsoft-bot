@@ -6,7 +6,7 @@ const axios = require('axios');
 function addNote (data) {
   const note = {
       created: Date.now(),
-      title: data.title || 'Note created at ' + Date.now(),
+      title: data.title,
       text: data.text,
       tags: [...data.tags] || [],
       lastEditTime: Date.now(),
