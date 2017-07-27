@@ -5,6 +5,11 @@ const restify = require('restify');
 
 const addNote = require('./requests/requestAddNote');
 const addExpense = require('./requests/requestAddExpense');
+const getNotes = require('./queries/queryGetLatestNotes');
+const makeCard = require('./components/componentCard');
+const makeCardWithButton = require('./components/componentCardWithBtn');
+const returnLastFive = require('./helpers/helpers');
+
 // setup restify server
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
@@ -58,7 +63,27 @@ bot.dialog('Add a note', [
     session.dialogData.text = args.intent.entity || session.message.text;
     session.dialogData.tags = [];
     addNote(session.dialogData);
-    session.endConversation(`note saved: ${session.dialogData.text}`);
+    const noteCompletion = makeCardWithButton(
+      session,
+      'Added note',
+      'You can view/edit all your notes via the button below',
+      'https://google.com',
+      'View/edit notes'
+    );
+    const noteConfirmationMessage = new builder.Message(session);
+    noteConfirmationMessage.addAttachment(noteCompletion);
+    session.send(noteConfirmationMessage);
+    getNotes()
+      .then((notes) => {
+        let cards = returnLastFive(notes);
+        cards.unshift(makeCard(session, 'note'));
+        const reply = new builder.Message(session);
+        reply.attachmentLayout(builder.AttachmentLayout.carousel);
+        reply.attachments(cards);
+        session.send('Seems like a good time to review some of your most recent notes');
+        session.send(reply);
+        session.endConversation();
+      });
   }
 ]).triggerAction({
   matches: 'AddNote'
