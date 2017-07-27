@@ -29,9 +29,8 @@ server.post('/api/messages', connector.listen());
 
 const bot = new builder.UniversalBot(connector,
   (session) => {
-    session.send('Hi there! I\'m your personal assistant and can help you save or query your billing items, expenses and notes');
-    session.beginDialog('options');
-    session.endConversation();
+    session.send('Hi, I can help you store and review your expenses and notes.');
+    session.send('All you need to do is send me a message that includes the word "expense", "note" or a synonym. Give it a try...');
   }
 );
 
@@ -44,7 +43,7 @@ bot.dialog('options', [
     session.send('All you need to do is send me a message that includes the word "expense", "note" or a synonym. Give it a try...');
   }
 ]).triggerAction({
-  matches: /^get started/i
+  matches: 'Help'
 });
 
 bot.dialog('Add a note', [
