@@ -54,7 +54,7 @@ bot.dialog('Add a note', [
       session,
       'note',
       'You can view/edit all your notes via the button below',
-      'https://google.com'
+      'http://localhost:9090/notes'
     );
     const noteConfirmationMessage = new builder.Message(session);
     noteConfirmationMessage.addAttachment(noteCompletion);
@@ -113,7 +113,7 @@ bot.dialog('Add an expense', [
       session,
       'expense',
       'You can view/edit all your expenses via the button below',
-      'https://google.com'
+      'http://localhost:9090/expenses'
     );
     const noteConfirmationMessage = new builder.Message(session);
     noteConfirmationMessage.addAttachment(expenseCompletion);
