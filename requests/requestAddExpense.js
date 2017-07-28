@@ -9,7 +9,7 @@ function addExpense (data) {
         lastEditTime: Date.now(),
         // TODO: Enable authentication
         // userId: firebase.auth().currentUser.uid
-        userId: '41ZyBmZ5XIMeVxk8en9LxXf9PWB3'
+        userId: 'N3yaIqLPkoQZXgSmb8jmeZqTVw43'
     };
 return axios.post(`${ADDEXPENSEURL}`, expense)
   .then((response) => {
