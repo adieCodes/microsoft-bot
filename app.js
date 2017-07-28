@@ -131,7 +131,6 @@ bot.dialog('View expense', [
         const reply = new builder.Message(session);
         reply.attachmentLayout(builder.AttachmentLayout.carousel);
         reply.attachments(cards);
-        session.send('Seems like a good time to review some of your most recent expenses');
         session.send(reply);
       });
     session.endConversation();
